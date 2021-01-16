@@ -4,111 +4,6 @@ import Gallery from "react-photo-gallery";
 import Modals from 'react-bootstrap/Modal'
 import Carousel, { Modal, ModalGateway } from "react-images";
 
-export const photos = [
-  
-  {
-    src: '/assets/images/photos/1.jpg',
-    width: 4,
-    height: 3
-  },
-  {
-    src: '/assets/images/photos/2.jpg',
-    width: 3,
-    height: 4
-  },
-  {
-    src: '/assets/images/photos/3.jpg',
-    width: 3,
-    height: 4
-  },
-  {
-    src: '/assets/images/photos/4.jpg',
-    width: 3,
-    height: 4
-  },
-  {
-    src: '/assets/images/photos/5.jpg',
-    width: 4,
-    height: 3
-  },
-  {
-    src: '/assets/images/photos/6.jpg',
-    width: 4,
-    height: 3
-  },
-  {
-    src: '/assets/images/photos/7.jpg',
-    width: 3,
-    height: 4
-  },
-  {
-    src: '/assets/images/photos/8.jpg',
-    width: 4,
-    height: 3
-  },
-  {
-    src: '/assets/images/photos/9.jpg',
-    width: 3,
-    height: 4
-  },
-  {
-    src: '/assets/images/photos/10.jpg',
-    width: 4,
-    height: 3
-  },
-  {
-    src: '/assets/images/photos/11.jpg',
-    width: 4,
-    height: 3
-  },
-  {
-    src: '/assets/images/photos/12.jpg',
-    width: 4,
-    height: 3
-  },
-  {
-    src: '/assets/images/photos/13.jpg',
-    width: 3,
-    height: 4
-  },
-  {
-    src: '/assets/images/photos/14.jpg',
-    width: 3,
-    height: 4
-  },
-  {
-    src: '/assets/images/photos/15.jpg',
-    width: 3,
-    height: 4
-  },
-  {
-    src: '/assets/images/photos/16.jpg',
-    width: 4,
-    height: 3
-  },
-  {
-    src: '/assets/images/photos/17.jpg',
-    width: 4,
-    height: 3
-  },
-  {
-    src: '/assets/images/photos/18.jpg',
-    width: 4,
-    height: 3
-  },
-  {
-    src: '/assets/images/photos/19.jpg',
-    width: 4,
-    height: 3
-  },
-  {
-    src: '/assets/images/photos/20.jpg',
-    width: 3,
-    height: 4
-  },
-  
-];
-
 class NewGallery extends Component {
   constructor(props){
     super(props)
@@ -117,7 +12,20 @@ class NewGallery extends Component {
       currentUpload: '',
       showUploadModal: false,
       currentImageTags: null,
+      photos: [],
     }
+  }
+
+  componentDidMount() {
+    fetch("http://localhost:9000/images").then(x => x.json()).then(images => {
+      this.setState({
+        photos: images.map(id => ({
+          src: 'http://localhost:9000/images/'+id,
+          width: 3,
+          height: 4
+        }))
+      });
+    });
   }
 
   setCurrentImage = (index) => {
@@ -170,13 +78,15 @@ class NewGallery extends Component {
     return (
       <div className="hello">
         <button onClick={this.toggleUploadModal}>Upload</button>
-        <Gallery photos={photos} direction={"column"} onClick={this.openLightbox} id="lightbox"/>
+        {this.state.photos.length > 0 
+        ? <Gallery photos={this.state.photos} direction={"column"} onClick={this.openLightbox} id="lightbox"/>
+        : null}
         <ModalGateway>
           {this.state.viewerIsOpen ? (
             <Modal onClose={this.closeLightbox}>
               <Carousel
                 currentIndex={this.state.currentImage}
-                views={photos.map(x => ({
+                views={this.state.photos.map(x => ({
                   ...x,
                   srcset: x.srcSet,
                   caption: x.title
@@ -188,24 +98,25 @@ class NewGallery extends Component {
 
 
         <Modals
-        show={this.state.showUploadModal}
-        onHide={this.toggleUploadModal}
-        dialogClassName="modal-90w"
-        aria-labelledby="example-custom-modal-styling-title"
-      >
-        <Modals.Header closeButton>
-          <Modals.Title id="example-custom-modal-styling-title">
-            Custom Modal Styling
-          </Modals.Title>
-        </Modals.Header>
-        <Modals.Body>
-          <p>
-          <img src={this.state.currentUpload} width="200px"/>
-          <input type='file' onChange={(e) => this.openFile(e)}/>
-          Tags will be here:
-          {this.tags()}
-          </p>
-        </Modals.Body>
+          show={this.state.showUploadModal}
+          onHide={this.toggleUploadModal}
+          dialogClassName="modal-90w"
+          aria-labelledby="example-custom-modal-styling-title"
+        >
+          <Modals.Header closeButton>
+            <Modals.Title id="example-custom-modal-styling-title">
+              Custom Modal Styling
+            </Modals.Title>
+          </Modals.Header>
+          <Modals.Body>
+            <p>
+            <img src={this.state.currentUpload} width="200px"/>
+            <form action="http://localhost:9000/images/upload" method="POST" encType="multipart/form-data">
+              <input type='file' name='img' onChange={(e) => this.openFile(e)}/>
+              <button type='submit'>Submit the image</button>
+            </form>
+            </p>
+          </Modals.Body>
       </Modals>
 
 

@@ -5,9 +5,9 @@ services:
     restart: always
     ports:
       - "3000:3000"
-    working_dir: /client/src/app
+    working_dir: /client
     volumes:
-      - ./client:/client/src/app
+      - ./client:/client
     build: ./client
     entrypoint: ["npm", "start"]
     links:
@@ -21,7 +21,6 @@ services:
       - "9000:9000"
     volumes:
       - ./api:/api
-      - /api/npde_modules
     build: ./api
     depends_on:
       - mongodb
