@@ -20,10 +20,10 @@ class NewGallery extends Component {
   }
 
   componentDidMount() {
-    fetch("http://localhost:9000/images").then(x => x.json()).then(images => {
+    fetch(process.env.REACT_APP_API_URL+"/api/images").then(x => x.json()).then(images => {
       this.setState({
         photos: images.map(id => ({
-          src: 'http://localhost:9000/images/'+id,
+          src: process.env.REACT_APP_API_URL+'/api/images/'+id,
           width: 3,
           height: 4
         }))
@@ -125,7 +125,7 @@ class NewGallery extends Component {
           <Modals.Body>
             <p>
             <img src={this.state.currentUpload} width="200px"/>
-            <form action="http://localhost:9000/images/upload" method="POST" encType="multipart/form-data">
+            <form action={process.env.REACT_APP_API_URL+"/api/images/upload"} method="POST" encType="multipart/form-data">
               <input type='file' name='img' onChange={(e) => this.openFile(e)}/>
               <button type='submit'>Submit the image</button>
             </form>

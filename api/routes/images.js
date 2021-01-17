@@ -54,7 +54,7 @@ router.post('/upload', (req, res) => {
           console.log(err);
       }
       else {
-          res.redirect('http://localhost:3000');
+          res.redirect(process.env.FRONTEND_URL);
       }
   });
 });

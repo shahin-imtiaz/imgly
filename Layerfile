@@ -20,6 +20,8 @@ COPY / /root
 
 RUN REPEATABLE sed -i -e '/volumes:/,+1d' docker-compose.yml && \
     docker-compose build --parallel && \
+    export API_URL="https://$EXPOSE_WEBSITE_HOST" && \
+    export FRONTEND_URL="https://$EXPOSE_WEBSITE_HOST" && \
     docker-compose up -d --force-recreate --remove-orphans
 
 EXPOSE WEBSITE localhost:3000 /
