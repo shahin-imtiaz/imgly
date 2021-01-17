@@ -1,11 +1,40 @@
 import React, { Component } from 'react';
 // import MiscStyles from './Misc.module.css';
-import Gallery from "react-photo-gallery";
+import Gallery, {Photo} from "react-photo-gallery";
 import Modals from 'react-bootstrap/Modal'
 import Carousel, { Modal, ModalGateway } from "react-images";
 import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
+import Spinner from 'react-bootstrap/Spinner'
 // import NavDropdown from 'react-bootstrap/NavDropdown'
+
+// const CustomPhoto = ({  index,
+//   src,
+//   photo,
+//   margin,
+//   direction,
+//   top,
+//   left,
+//   selected}) => {
+//     return <Photo src={src} index={index} photo={photo} margin={margin} direction={direction} top={top} left={left} selected={selected}/>
+// }
+const CustomPhoto = ({top, left, ...props}) => <div style={{position: "absolute", top, left}}>
+  <Photo {...props} />
+  <div style={{
+    position: "absolute", 
+    padding: "0.5em", 
+    width: props.photo.width+2,
+  }}>
+    <div style={{
+      borderRadius: "0.25em",
+      padding: "0.25em",
+      background: "rgba(255, 255, 255, 0.8)",
+    }}>
+      {props.photo.tags.map(({tag}) => tag.replaceAll('_', ' ')).join(', ')}
+    </div>
+  </div>
+  {console.log(props)}
+</div>
 
 class NewGallery extends Component {
   constructor(props){
@@ -16,6 +45,7 @@ class NewGallery extends Component {
       showUploadModal: false,
       currentImageTags: null,
       photos: [],
+      uploadSpinnerVisible: false
     }
   }
 
@@ -95,7 +125,13 @@ class NewGallery extends Component {
         </Navbar>
 
         {this.state.photos.length > 0 
-        ? <Gallery photos={this.state.photos} direction={"column"} onClick={this.openLightbox} id="lightbox"/>
+        ? <Gallery 
+          photos={this.state.photos} 
+          direction={"column"} 
+          onClick={this.openLightbox} 
+          id="lightbox"
+          renderImage={CustomPhoto}
+        />
         : null}
         <ModalGateway>
           {this.state.viewerIsOpen ? (
@@ -121,18 +157,33 @@ class NewGallery extends Component {
         >
           <Modals.Header closeButton>
             <Modals.Title id="example-custom-modal-styling-title">
-              Custom Modal Styling
+              Upload image
             </Modals.Title>
           </Modals.Header>
           <Modals.Body>
             <div>
-            <img src={this.state.currentUpload} width="200px"/>
-            <form action={process.env.REACT_APP_API_URL+"/api/images/upload"} method="POST" encType="multipart/form-data">
+            <img src={this.state.currentUpload} width="200px" className="d-block pt-2 pb-4 mx-auto" style={{borderRadius: "0.5em"}}/>
+            <div className={"w-100 flex-column justify-content-center align-items-center m-4 "+(this.state.uploadSpinnerVisible ? "d-flex" : "d-none")}>
+              <Spinner animation="border" role="status">
+                <span className="sr-only">Predicting tags for uploaded image</span>
+              </Spinner>
+              <span className="text-center mt-4">Uploading file and processing tags...</span>
+            </div>
+            <form 
+              action={process.env.REACT_APP_API_URL+"/api/images/upload"} 
+              method="POST" encType="multipart/form-data"
+              onSubmit={() => {
+                this.setState({uploadSpinnerVisible: true})
+                
+              }}
+            >
               <input type='file' name='img' onChange={(e) => this.openFile(e)}/>
-              <button type='submit'>Submit the image</button>
+              <button className="btn btn-primary" type="submit" disabled={!this.state.currentUpload}>Submit this image</button>
             </form>
             </div>
+
           </Modals.Body>
+         
       </Modals>
 
 
