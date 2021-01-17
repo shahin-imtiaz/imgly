@@ -18,7 +18,9 @@ COPY / /root
 # TODO: log in to docker hub
 # See https://layerci.com/docs/advanced-workflows#logging-in-to-docker to learn how to log in to docker
 
-RUN REPEATABLE docker-compose build --parallel && docker-compose up -d --force-recreate --remove-orphans
+RUN REPEATABLE sed -i -e '/volumes:/,+1d' docker-compose.yml && \
+    docker-compose build --parallel && \
+    docker-compose up -d --force-recreate --remove-orphans
 
 EXPOSE WEBSITE localhost:3000 /
 EXPOSE WEBSITE localhost:9000 /api
