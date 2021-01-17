@@ -39,14 +39,13 @@ router.get('/:id', async (req, res) => {
 
 router.get('/', async (req, res) => {
   let images = await imgModel.find({}, []);
+  images.reverse();
   res.send(images.map(({_id}) => _id));
+
 })
 
 router.post('/upload', (req, res) => {
-  console.log(req.files.img); // the uploaded file object
-  console.log(req.files.img.data.length)
   var obj = {
-    id: String(currId++),
     data: req.files.img.data,
     mimetype: req.files.img.mimetype,
   }
