@@ -5,7 +5,7 @@ import Modals from 'react-bootstrap/Modal'
 import Carousel, { Modal, ModalGateway } from "react-images";
 import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
-import NavDropdown from 'react-bootstrap/NavDropdown'
+// import NavDropdown from 'react-bootstrap/NavDropdown'
 
 class NewGallery extends Component {
   constructor(props){
@@ -22,10 +22,12 @@ class NewGallery extends Component {
   componentDidMount() {
     fetch(process.env.REACT_APP_API_URL+"/api/images").then(x => x.json()).then(images => {
       this.setState({
-        photos: images.map(id => ({
+        photos: images.map(({id, width, height, tags}) => ({
           src: process.env.REACT_APP_API_URL+'/api/images/'+id,
-          width: 3,
-          height: 4
+          width: width,
+          height: height,
+          tags: tags,
+          alt: tags.map(({tag}) => tag).join(' ')
         }))
       });
     });
@@ -55,13 +57,13 @@ class NewGallery extends Component {
   };
 
   openFile = (e) => {
+    
   this.setState({
     currentUpload: URL.createObjectURL(e.target.files[0])
   })
   }
 
   toggleUploadModal = () => {
-    console.log('hello');
     this.setState({
       showUploadModal: !this.state.showUploadModal
     })
@@ -85,7 +87,7 @@ class NewGallery extends Component {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto">
-            <button class="btn btn-primary" type="submit" onClick={this.toggleUploadModal}>
+            <button className="btn btn-primary" type="submit" onClick={this.toggleUploadModal}>
               Upload
             </button>
           </Nav>
@@ -123,13 +125,13 @@ class NewGallery extends Component {
             </Modals.Title>
           </Modals.Header>
           <Modals.Body>
-            <p>
+            <div>
             <img src={this.state.currentUpload} width="200px"/>
             <form action={process.env.REACT_APP_API_URL+"/api/images/upload"} method="POST" encType="multipart/form-data">
               <input type='file' name='img' onChange={(e) => this.openFile(e)}/>
               <button type='submit'>Submit the image</button>
             </form>
-            </p>
+            </div>
           </Modals.Body>
       </Modals>
 

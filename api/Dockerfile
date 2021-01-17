@@ -1,4 +1,14 @@
-FROM node:12-alpine
+FROM node:12-buster
+
+RUN apt-get update && \
+    apt-get install -y python3 python3-pip && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install keras==2.4.3 tensorflow Pillow
+ENV KERAS_HOME="/api/keras"
+COPY model.py /model.py
+RUN python3 /model.py
+
 # Set the working directory to /api
 WORKDIR /api
 # copy package.json into the container at /api

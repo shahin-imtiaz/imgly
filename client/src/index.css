@@ -11,3 +11,20 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+.navbar-brand {
+  font-family: 'Abril Fatface', cursive;
+  
+}
+
+.navbar {
+  position: fixed;
+  width: 100%;
+  z-index: 1;
+  top: 0
+}
+
+.react-photo-gallery--gallery {
+  margin-top: 58px
+}
