@@ -30,7 +30,7 @@ const CustomPhoto = ({top, left, ...props}) => <div style={{position: "absolute"
       padding: "0.25em",
       background: "rgba(255, 255, 255, 0.8)",
     }}>
-      {props.photo.tags.map(({tag}) => tag.replaceAll('_', ' ')).join(', ')}
+      {props.photo.tags.map(({tag}) => (tag && tag.replaceAll) ? tag.replaceAll('_', ' ') : '').join(', ')}
     </div>
   </div>
   {console.log(props)}
